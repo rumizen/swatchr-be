@@ -91,6 +91,22 @@ app.post("/api/v1/projects", async (request, response) => {
   }
 });
 
+app.post("/api/v1/palettes", async (request, response) => {
+  const newPalette = request.body.palette;
+  try {
+    if(newPalette) {
+      const id = await database("palettes").insert(newPalette, "id");
+      response.status(200).json({ id });
+    } else {
+      response.status(400).json({
+        error: "Expected an object with a key of palette in the body of the post request"
+      });
+    }
+  } catch (error) {
+    response.status(500).json({ error });
+  }
+})
+
 app.delete("/api/v1/projects/:id", async (request, response) => {
   const id = request.params.id;
   try {
