@@ -16,7 +16,9 @@ app.get("/", (request, response) => {
 app.get("/api/v1/projects", async (request, response) => {
   try {
     if (request.query.name) {
-      const project = await database("projects").select().where("name", request.query.name);
+      const project = await database("projects")
+        .select()
+        .where("name", request.query.name);
       response.status(200).json(project);
     }
     const projects = await database("projects").select();
@@ -94,18 +96,19 @@ app.post("/api/v1/projects", async (request, response) => {
 app.post("/api/v1/palettes", async (request, response) => {
   const newPalette = request.body.palette;
   try {
-    if(newPalette) {
+    if (newPalette) {
       const id = await database("palettes").insert(newPalette, "id");
       response.status(200).json({ id });
     } else {
       response.status(400).json({
-        error: "Expected an object with a key of palette in the body of the post request"
+        error:
+          "Expected an object with a key of palette in the body of the post request"
       });
     }
   } catch (error) {
     response.status(500).json({ error });
   }
-})
+});
 
 app.delete("/api/v1/projects/:id", async (request, response) => {
   const id = request.params.id;
@@ -122,6 +125,25 @@ app.delete("/api/v1/projects/:id", async (request, response) => {
     } else {
       response.status(404).json({
         error: `Could not find a project with id of ${id}`
+      });
+    }
+  } catch (error) {
+    response.status(500).json({ error });
+  }
+});
+
+app.delete("/api/v1/palettes/:id", async (request, response) => {
+  const id = request.params.id;
+  try {
+    const palette = await database("palettes")
+      .select()
+      .where("id", id)
+      .del();
+    if (palette) {
+      response.status(200).json({ id });
+    } else {
+      response.status(404).json({
+        error: `Could not find a palette with id of ${id}`
       });
     }
   } catch (error) {
