@@ -63,6 +63,27 @@ app.post("/api/v1/projects", async (request, response) => {
   }
 });
 
+
+app.delete("/api/v1/projects/:id", async (request, response) => {
+  const id = request.params.id;
+  try {
+    const project = await database("projects").select().where("id", id);
+    if (project) {
+      await database("projects")
+        .select()
+        .where("id", id)
+        .del();
+      response.status(200).json({ id });
+    } else {
+      response.status(404).json({
+        error: `Could not find a project with id of ${id}`
+      });
+    }
+  } catch (error) {
+    response.status(500).json({ error });
+  }
+});
+
 app.listen(app.get("port"), () => {
   console.log(`Swatchr is running on http://localhost:${app.get("port")}.`);
 });
