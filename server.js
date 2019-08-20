@@ -15,6 +15,10 @@ app.get("/", (request, response) => {
 
 app.get("/api/v1/projects", async (request, response) => {
   try {
+    if (request.query.name) {
+      const project = await database("projects").select().where("name", request.query.name);
+      response.status(200).json(project);
+    }
     const projects = await database("projects").select();
     response.status(200).json(projects);
   } catch (error) {
