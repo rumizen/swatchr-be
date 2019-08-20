@@ -63,7 +63,6 @@ app.post("/api/v1/projects", async (request, response) => {
   }
 });
 
-
 app.delete("/api/v1/projects/:id", async (request, response) => {
   const id = request.params.id;
   try {
@@ -83,6 +82,27 @@ app.delete("/api/v1/projects/:id", async (request, response) => {
     response.status(500).json({ error });
   }
 });
+
+app.patch("/api/v1/palettes/:id", async (request, response) => {
+  const id = request.params.id;
+  const name = request.body.name;
+  try {
+    const palette = await database("palettes").select().where("id", id);
+    if (palette) {
+      await database("palettes")
+        .select()
+        .where("id", id)
+        .update({ name });
+      response.status(200).json({ id, name });
+    } else {
+      response.status(404).json({
+        error: `Could not find a palette with id of ${id}`
+      });
+    }
+  } catch (error) {
+    response.status(500).json({ error });
+  }
+})
 
 app.listen(app.get("port"), () => {
   console.log(`Swatchr is running on http://localhost:${app.get("port")}.`);
