@@ -8,7 +8,7 @@ app.use(express.json());
 const environment = process.env.NODE_ENV || "development";
 const configuration = require("./knexfile")[environment];
 const database = require("knex")(configuration);
-app.locals.title = "Testing Swatchr"
+app.locals.title = "Testing Swatchr";
 app.set("port", process.env.PORT || 3000);
 
 app.get("/", (request, response) => {
@@ -26,18 +26,23 @@ app.get("/api/v1/projects", async (request, response) => {
     const projects = await database("projects").select();
     response.status(200).json(projects);
   } catch (error) {
-    response.status(500).json({ error });
+    // response.status(500).json({ error });
   }
 });
 
 app.get("/api/v1/projects/:id/palettes", async (request, response) => {
   try {
+    const id = request.params.id;
     const palettes = await database("palettes")
-      .where("project_id", request.params.id)
+      .where("project_id", id)
       .select();
-    response.status(200).json(palettes);
+    if (palettes.length) {
+      response.status(200).json(palettes);
+    } else {
+      response.status(404).json(`A project with an id of ${id} doesn't exist`);
+    }
   } catch (error) {
-    response.status(500).json({ error });
+    // response.status(500).json({ error });
   }
 });
 
