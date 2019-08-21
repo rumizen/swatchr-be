@@ -90,7 +90,7 @@ app.post("/api/v1/projects", async (request, response) => {
   try {
     if (newProject) {
       const id = await database("projects").insert(newProject, "id");
-      response.status(200).json({ id });
+      response.status(201).json({ id });
     } else {
       response.status(400).json({
         error:
@@ -107,7 +107,7 @@ app.post("/api/v1/palettes", async (request, response) => {
   try {
     if (newPalette) {
       const id = await database("palettes").insert(newPalette, "id");
-      response.status(200).json({ id });
+      response.status(201).json({ id });
     } else {
       response.status(400).json({
         error:

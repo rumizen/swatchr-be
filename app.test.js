@@ -106,4 +106,52 @@ describe("API", () => {
     });
   });
 
+  describe("POST /students", () => {
+
+    describe("happy path", () => {
+
+      it("should return a status of 201 on success", async () => {
+        const newProject = {
+          "project": { "name": "Test Post" }
+        };
+        const res = await request(app)
+          .post("/api/v1/projects")
+          .send(newProject);
+        expect(res.status).toBe(201);
+      })
+
+      it("should post a new student to the db", async () => {
+        const newProject = {
+          project: { name: "Test Post" }
+        };
+        const res = await request(app)
+          .post("/api/v1/projects")
+          .send(newProject);
+        const projects = await database("projects")
+          .where("id", parseInt(res.body.id))
+          .select();
+        const project = projects[0];
+  
+        expect(project.name).toEqual(newProject.project.name);
+      });
+
+    });
+
+    describe("sad paths", () => {
+
+      it("should send a 400 status back if request body is wrong", async () => {
+        const invalidProject = {
+          name: "Test Fail Name"
+        };
+        const res = await request(app)
+          .post("/api/v1/projects")
+          .send(invalidProject);
+        expect(res.status).toBe(400);
+      });
+    })
+
+  });
+
+
+
 })
