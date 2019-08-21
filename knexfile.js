@@ -3,8 +3,25 @@ module.exports = {
   development: {
     client: "pg",
     connection: "postgres://localhost/swatchr",
+    migrations: {
+      directory: "./migrations"
+    },
+    seeds: {
+      directory: "./seeds"
+    },
     useNullAsDefault: true
   },
+  test: {
+    client: "pg",
+    connection: "postgres://localhost/swatchr_test",
+    migrations: {
+      directory: "./migrations"
+    },
+    seeds: {
+      directory: "./seeds/test"
+    },
+    useNullAsDefault: true
+  }
   // production: {
   //   client: "pg",
   //   connection: "postgres://localhost/swatchr",
