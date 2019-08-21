@@ -207,5 +207,50 @@ describe("API", () => {
     });
 
   });
-  
+
+  describe("DELETE /projects/:id", () => {
+
+    describe("happy paths", () => {
+      it("should return a 200 status on success", async () => {
+        const projects = await request(app).get("/api/v1/projects");
+        const projectId = projects.body[0].id;
+        const deleteRes = await request(app).delete(
+          `/api/v1/projects/${projectId}`
+        );
+        expect(deleteRes.status).toBe(200);
+      });
+      it("should return an id of deleted project on success", async () => {
+        const projects = await request(app).get("/api/v1/projects");
+        const projectId = projects.body[0].id;
+        const deleteRes = await request(app).delete(
+          `/api/v1/projects/${projectId}`
+        );
+        expect(parseInt(deleteRes.body.id)).toBe(projectId);
+      });
+      it("should return a 404 status when attempting to fetch palettes for deleted project", async () => {
+        const projects = await request(app).get("/api/v1/projects");
+        const projectId = projects.body[0].id;
+        const deleteRes = await request(app).delete(
+          `/api/v1/projects/${projectId}`
+        );
+        const palettesRes = await request(app).get(`/api/v1/projects/${projectId}/palettes`);
+
+        expect(palettesRes.status).toBe(404);
+      });
+    });
+
+    describe("sad paths", () => {
+
+      it("should return a 404 status if id is invalid", async () => {
+        const invalidId = -1;
+        const res = await request(app).delete(
+          `/api/v1/projects/${invalidId}`
+        );
+        expect(res.status).toBe(404);
+      });
+
+    });
+    
+  });
+
 });
