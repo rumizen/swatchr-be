@@ -10,60 +10,63 @@ describe("API", () => {
   });
 
   describe("GET /projects", () => {
-
     describe("happy path", () => {
       it("should return a status code of 200", async () => {
         const res = await request(app).get("/api/v1/projects");
         expect(res.status).toBe(200);
-      })
+      });
       it("should return all projects in database", async () => {
         const expectedProjects = await database("projects").select();
         const cleanedExpectedProjects = expectedProjects.map(proj => {
           return { name: proj.name, id: proj.id };
-        })
+        });
 
         const res = await request(app).get("/api/v1/projects");
         const projects = res.body;
         const cleanedProjects = projects.map(proj => {
           return { name: proj.name, id: proj.id };
-        })
+        });
 
         expect(cleanedProjects).toEqual(cleanedExpectedProjects);
-      })
+      });
       it("should return a project with the query name", async () => {
-        const expectedProjectName = "Sample 1"
+        const expectedProjectName = "Sample 1";
         const res = await request(app).get("/api/v1/projects/?name=Sample 1");
         const projectName = res.body[0].name;
 
         expect(projectName).toEqual(expectedProjectName);
-      })
-    })
-
-  })
+      });
+    });
+  });
 
   describe("GET /projects/:id/palettes", () => {
-
     describe("happy path", () => {
-
       it("should return a status code of 200", async () => {
         const res = await request(app).get("/api/v1/projects");
-        const projectId = res.body[0].id
-        const paletteRes = await request(app).get(`/api/v1/projects/${projectId}/palettes`);
+        const projectId = res.body[0].id;
+        const paletteRes = await request(app).get(
+          `/api/v1/projects/${projectId}/palettes`
+        );
         expect(paletteRes.status).toBe(200);
       });
       it("should return all palettes for the project", async () => {
         const projectRes = await request(app).get("/api/v1/projects");
         const projectId = projectRes.body[0].id;
-        const expectedPalettes = await database("palettes").where("project_id", projectId);
+        const expectedPalettes = await database("palettes").where(
+          "project_id",
+          projectId
+        );
         const cleanedExpectedPalettes = expectedPalettes.map(pal => {
           return { name: pal.name, id: pal.id };
         });
 
-        const res = await request(app).get(`/api/v1/projects/${projectId}/palettes`);
+        const res = await request(app).get(
+          `/api/v1/projects/${projectId}/palettes`
+        );
         const palettes = res.body;
         const cleanedPalettes = palettes.map(pal => {
           return { name: pal.name, id: pal.id };
-        })
+        });
 
         expect(cleanedPalettes).toEqual(cleanedExpectedPalettes);
       });
@@ -72,14 +75,15 @@ describe("API", () => {
     describe("sad paths", () => {
       it("should return a 404 status code if id doesn't exist", async () => {
         const invalidId = -1;
-        const res = await request(app).get(`/api/v1/projects/${invalidId}/palettes`);
+        const res = await request(app).get(
+          `/api/v1/projects/${invalidId}/palettes`
+        );
         expect(res.status).toBe(404);
-      })
-    })
+      });
+    });
   });
 
   describe("GET /palettes/:id", () => {
-
     describe("happy path", () => {
       it("should return a status code of 200", async () => {
         const response = await request(app).get("/api/v1/palettes/14");
@@ -106,19 +110,17 @@ describe("API", () => {
     });
   });
 
-  describe("POST /students", () => {
-
+  describe("POST /projects", () => {
     describe("happy path", () => {
-
       it("should return a status of 201 on success", async () => {
         const newProject = {
-          "project": { "name": "Test Post" }
+          project: { name: "Test Post" }
         };
         const res = await request(app)
           .post("/api/v1/projects")
           .send(newProject);
         expect(res.status).toBe(201);
-      })
+      });
 
       it("should post a new student to the db", async () => {
         const newProject = {
@@ -131,14 +133,12 @@ describe("API", () => {
           .where("id", parseInt(res.body.id))
           .select();
         const project = projects[0];
-  
+
         expect(project.name).toEqual(newProject.project.name);
       });
-
     });
 
     describe("sad paths", () => {
-
       it("should send a 400 status back if request body is wrong", async () => {
         const invalidProject = {
           name: "Test Fail Name"
@@ -148,10 +148,64 @@ describe("API", () => {
           .send(invalidProject);
         expect(res.status).toBe(400);
       });
-    })
-
+    });
   });
 
+  describe("PATCH /projects/:id", () => {
+    describe("happy path", () => {
+      it("should return a 200 status on success", async () => {
+        const newName = { name: "Different Name" };
+        const res = await request(app).get("/api/v1/projects");
+        const projectId = res.body[0].id;
 
+        const projectRes = await request(app)
+          .patch(`/api/v1/projects/${projectId}`)
+          .send(newName);
 
-})
+        expect(projectRes.status).toBe(200);
+      });
+
+      it("should change the project name and return the new name", async () => {
+        const newName = { name: "Different Name" };
+        const res = await request(app).get("/api/v1/projects");
+        const projectId = res.body[0].id;
+        const project = await database("projects").where("id", projectId);
+
+        const projectRes = await request(app)
+          .patch(`/api/v1/projects/${projectId}`)
+          .send(newName);
+
+        expect(project.name).not.toEqual(projectRes.body.name);
+        expect(projectRes.body.name).toEqual(newName.name);
+      })
+    });
+
+    describe("sad paths", () => {
+      it("should return a 500 status on failure", async () => {
+        const newName = { wrong: "Different Name" };
+        const res = await request(app).get("/api/v1/projects");
+        const projectId = res.body[0].id;
+
+        const projectRes = await request(app)
+          .patch(`/api/v1/projects/${projectId}`)
+          .send(newName);
+
+        expect(projectRes.status).toBe(500);
+      });
+
+      it("should return a 404 status if sent an invalid id", async () => {
+        const newName = { name: "Different Name" };
+        const invalidId = -1;
+
+        const projectRes = await request(app)
+          .patch(`/api/v1/projects/${invalidId}`)
+          .send(newName);
+
+        expect(projectRes.status).toBe(404);
+      });
+
+    });
+
+  });
+  
+});

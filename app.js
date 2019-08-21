@@ -190,7 +190,7 @@ app.patch("/api/v1/projects/:id", async (request, response) => {
     const project = await database("projects")
       .select()
       .where("id", id);
-    if (project) {
+    if (project.length) {
       await database("projects")
         .select()
         .where("id", id)
