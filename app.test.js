@@ -39,6 +39,70 @@ describe("API", () => {
     });
   });
 
+  describe("GET /projects/:id", () => {
+    describe("happy path", () => {
+      it("should return a status code of 200", async () => {
+        const res = await request(app).get("/api/v1/projects/2");
+        expect(res.status).toBe(200);
+      });
+
+      it("should return a specific project", async () => {
+        const projectRes = await request(app).get("/api/v1/projects");
+        const projectId = projectRes.body[0].id;
+        const expectedProjectArray = await database("projects").where(
+          "id",
+          projectId
+        );
+        const expectedProject = expectedProjectArray[0];
+        const projPalettes = await database("palettes").where(
+          "project_id",
+          projectId
+        );
+        const cleanedExpectedProjPalettes = projPalettes.map(pal => {
+          return {
+            id: pal.id,
+            name: pal.name,
+            project_id: pal.project_id,
+            color1: pal.color1,
+            color2: pal.color2,
+            color3: pal.color3,
+            color4: pal.color4,
+            color5: pal.color5,
+          }
+        })
+        expectedProject.palettes = cleanedExpectedProjPalettes;
+        const res = await request(app).get(`/api/v1/projects/${projectId}`);
+        const project = res.body;
+        const cleanProjPalettes = project.palettes.map(pal => {
+          return {
+            id: pal.id,
+            name: pal.name,
+            project_id: pal.project_id,
+            color1: pal.color1,
+            color2: pal.color2,
+            color3: pal.color3,
+            color4: pal.color4,
+            color5: pal.color5,
+          }
+        })
+        project.palettes = cleanProjPalettes;
+
+        expect(project.id).toEqual(expectedProject.id);
+        expect(project.name).toEqual(expectedProject.name);
+        expect(project.palettes).toEqual(expectedProject.palettes);
+      });
+    });
+
+    describe("sad path", () => {
+      it.skip('should return a 404 status and the message: "Could not find a project with id of 1" ', async () => {
+        const invalidId = -1;
+        const response = await request(app).get(`/api/v1/projects/${invalidId}`);
+        expect(response.status).toBe(404);
+        expect(response.body.error).toEqual('Could not find a project with id of -1');
+      })
+    });
+  });
+
   describe("GET /projects/:id/palettes", () => {
     describe("happy path", () => {
       it("should return a status code of 200", async () => {
@@ -177,7 +241,7 @@ describe("API", () => {
 
         expect(project.name).not.toEqual(projectRes.body.name);
         expect(projectRes.body.name).toEqual(newName.name);
-      })
+      });
     });
 
     describe("sad paths", () => {
@@ -203,13 +267,10 @@ describe("API", () => {
 
         expect(projectRes.status).toBe(404);
       });
-
     });
-
   });
 
   describe("DELETE /projects/:id", () => {
-
     describe("happy paths", () => {
       it("should return a 200 status on success", async () => {
         const projects = await request(app).get("/api/v1/projects");
@@ -233,24 +294,20 @@ describe("API", () => {
         const deleteRes = await request(app).delete(
           `/api/v1/projects/${projectId}`
         );
-        const palettesRes = await request(app).get(`/api/v1/projects/${projectId}/palettes`);
+        const palettesRes = await request(app).get(
+          `/api/v1/projects/${projectId}/palettes`
+        );
 
         expect(palettesRes.status).toBe(404);
       });
     });
 
     describe("sad paths", () => {
-
       it("should return a 404 status if id is invalid", async () => {
         const invalidId = -1;
-        const res = await request(app).delete(
-          `/api/v1/projects/${invalidId}`
-        );
+        const res = await request(app).delete(`/api/v1/projects/${invalidId}`);
         expect(res.status).toBe(404);
       });
-
     });
-    
   });
-
 });
