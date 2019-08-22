@@ -24,7 +24,7 @@ module.exports = {
   },
   production: {
     client: "pg",
-    connection: "http://swatchr-be.herokuapp.com",
+    connection: process.env.DATABASE_URL + `?ssl=true`,
     migrations: {
       directory: "./migrations"
     },
