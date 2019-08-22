@@ -167,7 +167,7 @@ app.patch("/api/v1/palettes/:id", async (request, response) => {
     const palette = await database("palettes")
       .select()
       .where("id", id);
-    if (palette) {
+    if (palette.length) {
       await database("palettes")
         .select()
         .where("id", id)

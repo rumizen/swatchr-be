@@ -330,6 +330,50 @@ describe("API", () => {
     });
   });
 
+  describe("PATCH /palettes/:id", () => {
+    describe("happy path", () => {
+      it('should return a 200 status on success', async () => {
+        const projectRes = await request(app).get("/api/v1/projects");
+        const projectId = projectRes.body[0].id;
+        const newName = { name: "Different Palette Name" };
+        const res = await request(app).get(`/api/v1/projects/${projectId}/palettes`);
+        const paletteId = res.body[0].id
+
+        const paletteRes = await request(app)
+          .patch(`/api/v1/palettes/${paletteId}`)
+          .send(newName);
+
+        expect(paletteRes.status).toBe(200);
+      })
+
+      it('should change the name of a palette and return a new name', async () => {
+        const projectRes = await request(app).get("/api/v1/projects");
+        const projectId = projectRes.body[0].id;
+        const newName = { name: "Different Palette Name" };
+        const res = await request(app).get(`/api/v1/projects/${projectId}/palettes`);
+        const paletteId = res.body[0].id
+
+        const paletteRes = await request(app)
+          .patch(`/api/v1/palettes/${paletteId}`)
+          .send(newName);
+
+      expect(paletteRes.body.name).toEqual(newName.name)
+      })
+    });
+
+    describe("sad path", () => {
+      it('should return a 404 status, if sent an invalid id', async () => {
+        const newName = { name: "Different Palette Name" };
+        const invalidId = -1
+        const paletteRes = await request(app)
+          .patch(`/api/v1/palettes/${invalidId}`)
+          .send(newName);
+
+          expect(paletteRes.status).toBe(404);
+      })
+    })
+  })
+
   describe("DELETE /projects/:id", () => {
     describe("happy paths", () => {
       it("should return a 200 status on success", async () => {
