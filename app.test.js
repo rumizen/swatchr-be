@@ -94,7 +94,7 @@ describe("API", () => {
     });
 
     describe("sad path", () => {
-      it('should return a 404 status and the message: "Could not find a project with id of 1" ', async () => {
+      it('should return a 404 status and the message: "Could not find a project with id of -1" ', async () => {
         const invalidId = -1;
         const response = await request(app).get(`/api/v1/projects/${invalidId}`);
         expect(response.status).toBe(404);

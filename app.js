@@ -51,6 +51,7 @@ app.get("/api/v1/projects/:id", async (request, response) => {
     const project = await database("projects")
       .select()
       .where("id", request.params.id);
+      console.log("PROJECT", project)
     if (project) {
       const palettes = await database("palettes")
         .select()
@@ -144,14 +145,14 @@ app.delete("/api/v1/projects/:id", async (request, response) => {
 app.delete("/api/v1/palettes/:id", async (request, response) => {
   const id = request.params.id;
   try {
-    const paletteToDelete = await database("palettes")
+    const palette = await database("palettes")
       .select()
       .where("id", id)
-    if (paletteToDelete) {
-      await database("palettes")
-      .select()
-      .where("id", id)
-      .del();
+      if (palette.length) {
+        await database("palettes")
+        .select()
+        .where("id", id)
+        .del();
       response.status(204);
     } else {
       response.status(404).json({
