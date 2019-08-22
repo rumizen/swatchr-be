@@ -255,7 +255,7 @@ describe("API", () => {
       });
     });
     describe("sad path", () => {
-      it("should send a 400 response status back if the request body is wrong", async () => {
+      it("should send a 422 response status back if the request body is wrong", async () => {
         const projectRes = await request(app).get("/api/v1/projects");
         const projectId = projectRes.body[0].id;
         const invalidPalette = { 
@@ -270,8 +270,7 @@ describe("API", () => {
         .post(`/api/v1/projects/${projectId}/palettes`)
         .send(invalidPalette);
 
-        console.log(res.body)
-      // expect(res.status).toBe(400)
+      expect(res.status).toBe(422)
       })
     })
   });
