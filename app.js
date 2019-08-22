@@ -144,12 +144,15 @@ app.delete("/api/v1/projects/:id", async (request, response) => {
 app.delete("/api/v1/palettes/:id", async (request, response) => {
   const id = request.params.id;
   try {
-    const palette = await database("palettes")
+    const paletteToDelete = await database("palettes")
+      .select()
+      .where("id", id)
+    if (paletteToDelete) {
+      await database("palettes")
       .select()
       .where("id", id)
       .del();
-    if (palette) {
-      response.status(204).json({ id });
+      response.status(204);
     } else {
       response.status(404).json({
         error: `Could not find a palette with id of ${id}`

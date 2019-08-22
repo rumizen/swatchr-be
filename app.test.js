@@ -418,11 +418,24 @@ describe("API", () => {
 
   describe("DELETE palettes/:id", () => {
     describe("happy path", () => {
-
+      it("should return a 204 status on success", async () => {
+        const projects = await request(app).get("/api/v1/projects");
+        const projectId = projects.body[0].id;
+        const palettes = await request(app).get(`/api/v1/projects/${projectId}/palettes`);
+        const paletteId = palettes.body[0].id;
+        const deleteRes = await request(app).delete(
+          `/api/v1/palettes/${paletteId}`
+        );
+        expect(deleteRes.status).toBe(204);
+      });
     });
 
     describe("sad path", () => {
-
+      it("should return a 404 status if id is invalid", async () => {
+        const invalidId = -1;
+        const res = await request(app).delete(`/api/v1/palettes/${invalidId}`);
+        expect(res.status).toBe(404);
+      });
     });
   });
 });
