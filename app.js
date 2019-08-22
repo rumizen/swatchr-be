@@ -103,19 +103,19 @@ app.post("/api/v1/projects", async (request, response) => {
 });
 
 app.post("/api/v1/projects/:id/palettes", async (request, response) => {
-  const newPalette = request.body;
+  let newPalette = request.body
   try {
-    if (newPalette) {
-      const id = await database("palettes").insert(newPalette, "id");
-      response.status(201).json({ id });
-    } else {
-      response.status(400).json({
-        error:
-          "Expected an object with a key of palette in the body of the post request"
-      });
+    for(let requiredParameter of ['name', 'project_id', 'color1', 'color2', 'color3', 'color4', 'color5']) {
+      if(!newPalette[requiredParameter]) {
+        return response.status(422).json({
+          error: `Expected format: { name: <String>, project_id : <Integer>, color1 : <Sring>, color2 : <Sring>, color3 : <Sring>, color4 : <Sring>, color5: <String> }. You're missing a ${requiredParameter} property.`
+        })
+      }
     }
+      const newPaletteId = await database.insert(request.body).returning('*').into('palettes')
+      response.status(201).json(newPaletteId); 
   } catch (error) {
-    response.status(500).json({ error });
+    response.status(500).json({ error })
   }
 });
 

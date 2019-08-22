@@ -251,11 +251,30 @@ describe("API", () => {
           .send(newPalette);
         const paletteArray = await database('palettes').where('project_id', projectId).select()
         const foundPalette = paletteArray.find(pal => pal.name === newPalette.name)
-
         expect(foundPalette.name).toEqual(newPalette.name)
+      });
+    });
+    describe("sad path", () => {
+      it("should send a 400 response status back if the request body is wrong", async () => {
+        const projectRes = await request(app).get("/api/v1/projects");
+        const projectId = projectRes.body[0].id;
+        const invalidPalette = { 
+          name: "Palette 10000",
+          color1: "#B06454",
+          color2: "#B7AE23",
+          color3: "#39B723",
+          color4: "#23B7B7",
+          color5: "#232EB7"
+        }
+        const res = await request(app)
+        .post(`/api/v1/projects/${projectId}/palettes`)
+        .send(invalidPalette);
+
+        console.log(res.body)
+      // expect(res.status).toBe(400)
       })
     })
-  })
+  });
 
   describe("PATCH /projects/:id", () => {
     describe("happy path", () => {
