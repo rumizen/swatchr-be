@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --forceExit --detectOpenHandles"
+    "test": "jest --forceExit"
   },
   "keywords": [],
   "author": "",
