@@ -32,5 +32,9 @@ module.exports = {
       directory: "./seeds"
     },
     useNullAsDefault: true
+  },
+  pool: {
+    min: 0,
+    max: 10
   }
 };
