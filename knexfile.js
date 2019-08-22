@@ -21,10 +21,16 @@ module.exports = {
       directory: "./seeds/test"
     },
     useNullAsDefault: true
+  },
+  production: {
+    client: "pg",
+    connection: "http://swatchr-be.herokuapp.com",
+    migrations: {
+      directory: "./migrations"
+    },
+    seeds: {
+      directory: "./seeds/test"
+    },
+    useNullAsDefault: true
   }
-  // production: {
-  //   client: "pg",
-  //   connection: "postgres://localhost/swatchr",
-  //   useNullAsDefault: true
-  // }
 };
