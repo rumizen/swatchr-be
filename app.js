@@ -52,7 +52,7 @@ app.get("/api/v1/projects/:id", async (request, response) => {
       .select()
       .where("id", request.params.id);
       console.log("PROJECT", project)
-    if (project) {
+    if (project.length) {
       const palettes = await database("palettes")
         .select()
         .where("project_id", request.params.id);

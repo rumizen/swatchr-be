@@ -42,7 +42,9 @@ describe("API", () => {
   describe("GET /projects/:id", () => {
     describe("happy path", () => {
       it("should return a status code of 200", async () => {
-        const res = await request(app).get("/api/v1/projects/2");
+        const projectRes = await request(app).get("/api/v1/projects");
+        const projectId = projectRes.body[0].id;
+        const res = await request(app).get(`/api/v1/projects/${projectId}`);
         expect(res.status).toBe(200);
       });
 
