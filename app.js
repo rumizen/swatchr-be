@@ -73,7 +73,7 @@ app.get("/api/v1/palettes/:id", async (request, response) => {
     const palette = await database("palettes")
       .select()
       .where("id", id);
-    if (palette) {
+    if (palette.length) {
       response.status(200).json(palette);
     } else {
       response.status(404).json({
