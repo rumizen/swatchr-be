@@ -102,8 +102,8 @@ app.post("/api/v1/projects", async (request, response) => {
   }
 });
 
-app.post("/api/v1/palettes", async (request, response) => {
-  const newPalette = request.body.palette;
+app.post("/api/v1/projects/:id/palettes", async (request, response) => {
+  const newPalette = request.body;
   try {
     if (newPalette) {
       const id = await database("palettes").insert(newPalette, "id");

@@ -202,6 +202,28 @@ describe("API", () => {
       });
     });
 
+    describe("POST /projects/:id/palettes", () => {
+      describe("happy path", () => {
+        it("should return a status of 201 on success", async () => {
+          const projectRes = await request(app).get("/api/v1/projects");
+          const projectId = projectRes.body[0].id;
+          const newPalette = {
+              name: "Test Palette", 
+              color1: "red",
+              color2: "blue",
+              color3: "orange",
+              color4: "green",
+              color5: "yellow",
+              project_id: projectId
+          };
+          const res = await request(app)
+            .post(`/api/v1/projects/${projectId}/palettes`)
+            .send(newPalette);
+          expect(res.status).toBe(201);
+        });
+      })
+    })
+
     describe("sad paths", () => {
       it("should send a 400 status back if request body is wrong", async () => {
         const invalidProject = {
