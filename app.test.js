@@ -201,29 +201,6 @@ describe("API", () => {
         expect(project.name).toEqual(newProject.project.name);
       });
     });
-
-    describe("POST /projects/:id/palettes", () => {
-      describe("happy path", () => {
-        it("should return a status of 201 on success", async () => {
-          const projectRes = await request(app).get("/api/v1/projects");
-          const projectId = projectRes.body[0].id;
-          const newPalette = {
-              name: "Test Palette", 
-              color1: "red",
-              color2: "blue",
-              color3: "orange",
-              color4: "green",
-              color5: "yellow",
-              project_id: projectId
-          };
-          const res = await request(app)
-            .post(`/api/v1/projects/${projectId}/palettes`)
-            .send(newPalette);
-          expect(res.status).toBe(201);
-        });
-      })
-    })
-
     describe("sad paths", () => {
       it("should send a 400 status back if request body is wrong", async () => {
         const invalidProject = {
@@ -236,6 +213,49 @@ describe("API", () => {
       });
     });
   });
+
+  describe("POST /projects/:id/palettes", () => {
+    describe("happy path", () => {
+      it("should return a status of 201 on success", async () => {
+        const projectRes = await request(app).get("/api/v1/projects");
+        const projectId = projectRes.body[0].id;
+        const newPalette = {
+            name: "Test Palette", 
+            color1: "red",
+            color2: "blue",
+            color3: "orange",
+            color4: "green",
+            color5: "yellow",
+            project_id: projectId
+        };
+        const res = await request(app)
+          .post(`/api/v1/projects/${projectId}/palettes`)
+          .send(newPalette);
+        expect(res.status).toBe(201);
+      });
+
+      it("should post a new palette to the database", async () => {
+        const projectRes = await request(app).get("/api/v1/projects");
+        const projectId = projectRes.body[0].id;
+        const newPalette = {
+          name: "Palette 10000",
+          color1: "#B06454",
+          color2: "#B7AE23",
+          color3: "#39B723",
+          color4: "#23B7B7",
+          color5: "#232EB7",
+          project_id: projectId
+        };
+        const res = await request(app)
+          .post(`/api/v1/projects/${projectId}/palettes`)
+          .send(newPalette);
+        const paletteArray = await database('palettes').where('project_id', projectId).select()
+        const foundPalette = paletteArray.find(pal => pal.name === newPalette.name)
+
+        expect(foundPalette.name).toEqual(newPalette.name)
+      })
+    })
+  })
 
   describe("PATCH /projects/:id", () => {
     describe("happy path", () => {
