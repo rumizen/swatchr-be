@@ -149,7 +149,7 @@ app.delete("/api/v1/palettes/:id", async (request, response) => {
       .where("id", id)
       .del();
     if (palette) {
-      response.status(200).json({ id });
+      response.status(204).json({ id });
     } else {
       response.status(404).json({
         error: `Could not find a palette with id of ${id}`

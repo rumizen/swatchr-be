@@ -414,4 +414,15 @@ describe("API", () => {
       });
     });
   });
+
+
+  describe("DELETE palettes/:id", () => {
+    describe("happy path", () => {
+
+    });
+
+    describe("sad path", () => {
+
+    });
+  });
 });
