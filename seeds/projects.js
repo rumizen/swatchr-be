@@ -4,19 +4,19 @@ const projects = [
     palettes: [
       {
         name: "Palette 1",
-        color1: "#B06454",
-        color2: "#B7AE23",
-        color3: "#39B723",
-        color4: "#23B7B7",
-        color5: "#232EB7"
+        color1: "B06454",
+        color2: "B7AE23",
+        color3: "39B723",
+        color4: "23B7B7",
+        color5: "232EB7"
       },
       {
         name: "Palette 2",
-        color1: "#B06453",
-        color2: "#B7AE26",
-        color3: "#39B728",
-        color4: "#23B7B5",
-        color5: "#232EB1"
+        color1: "B06453",
+        color2: "B7AE26",
+        color3: "39B728",
+        color4: "23B7B5",
+        color5: "232EB1"
       }
     ]
   },
@@ -25,19 +25,19 @@ const projects = [
     palettes: [
       {
         name: "Palette 1",
-        color1: "#B06454",
-        color2: "#B7AE23",
-        color3: "#39B723",
-        color4: "#23B7B7",
-        color5: "#232EB7"
+        color1: "B06454",
+        color2: "B7AE23",
+        color3: "39B723",
+        color4: "23B7B7",
+        color5: "232EB7"
       },
       {
         name: "Palette 2",
-        color1: "#B06453",
-        color2: "#B7AE26",
-        color3: "#39B728",
-        color4: "#23B7B5",
-        color5: "#232EB1"
+        color1: "B06453",
+        color2: "B7AE26",
+        color3: "39B728",
+        color4: "23B7B5",
+        color5: "232EB1"
       }
     ]
   },
@@ -46,19 +46,19 @@ const projects = [
     palettes: [
       {
         name: "Palette 1",
-        color1: "#B06454",
-        color2: "#B7AE23",
-        color3: "#39B723",
-        color4: "#23B7B7",
-        color5: "#232EB7"
+        color1: "B06454",
+        color2: "B7AE23",
+        color3: "39B723",
+        color4: "23B7B7",
+        color5: "232EB7"
       },
       {
         name: "Palette 2",
-        color1: "#B06453",
-        color2: "#B7AE26",
-        color3: "#39B728",
-        color4: "#23B7B5",
-        color5: "#232EB1"
+        color1: "B06453",
+        color2: "B7AE26",
+        color3: "39B728",
+        color4: "23B7B5",
+        color5: "232EB1"
       }
     ]
   }
