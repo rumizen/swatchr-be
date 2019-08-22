@@ -29,7 +29,7 @@ module.exports = {
       directory: "./migrations"
     },
     seeds: {
-      directory: "./seeds/test"
+      directory: "./seeds"
     },
     useNullAsDefault: true
   }
