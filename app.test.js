@@ -152,16 +152,37 @@ describe("API", () => {
   describe("GET /palettes/:id", () => {
     describe("happy path", () => {
       it("should return a status code of 200", async () => {
-        const response = await request(app).get("/api/v1/palettes/14");
+        const projectRes = await request(app).get("/api/v1/projects");
+        const projectId = projectRes.body[0].id;
+        const palettes = await database("palettes").where(
+          "project_id",
+          projectId
+        );
+        const paletteId = palettes[0].id;
+        const response = await request(app).get(`/api/v1/palettes/${paletteId}`);
         expect(response.status).toBe(200);
       });
       it("should return a palette matching the id", async () => {
-        const expectedPalette = await database("palettes").where("id", 14);
+        const projectRes = await request(app).get("/api/v1/projects");
+        const projectId = projectRes.body[0].id;
+        const palettes = await database("palettes").where(
+          "project_id",
+          projectId
+        );
+        const paletteId = palettes[0].id;
+        const expectedPalette = await database("palettes").where("id", paletteId);
+        const cleanedExpectedPalette = expectedPalette.map(pal => {
+          return { name: pal.name, id: pal.id };
+        })
+        const response = await request(app).get(
+          `/api/v1/palettes/${paletteId}`
+        );
+        const palette = response.body;
+        const cleanedPalette = palette.map(pal => {
+          return { name: pal.name, id: pal.id };
+        })
 
-        const res = await request(app).get("/api/v1/palettes/14");
-        const palette = res.body;
-
-        expect(palette).toEqual(expectedPalette);
+        expect(cleanedPalette).toEqual(cleanedExpectedPalette);
       });
     });
 
@@ -421,12 +442,9 @@ describe("API", () => {
   describe("DELETE palettes/:id", () => {
     describe("happy path", () => {
       it("should return a 204 status on success", async () => {
-        const projects = await request(app).get("/api/v1/projects");
-        const projectId = projects.body[0].id;
-        const palettes = await request(app).get(`/api/v1/projects/${projectId}/palettes`);
-        const paletteId = palettes.body[0].id;
+        const palette = await database('palettes').first()
         const deleteRes = await request(app).delete(
-          `/api/v1/palettes/${paletteId}`
+          `/api/v1/palettes/${palette.id}`
         );
         expect(deleteRes.status).toBe(204);
       });

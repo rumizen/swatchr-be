@@ -26,7 +26,6 @@ app.get("/api/v1/projects", async (request, response) => {
     const projects = await database("projects").select();
     response.status(200).json(projects);
   } catch (error) {
-    // response.status(500).json({ error });
   }
 });
 
@@ -42,7 +41,7 @@ app.get("/api/v1/projects/:id/palettes", async (request, response) => {
       response.status(404).json(`A project with an id of ${id} doesn't exist`);
     }
   } catch (error) {
-    // response.status(500).json({ error });
+    response.status(500).json({ error });
   }
 });
 
@@ -51,7 +50,6 @@ app.get("/api/v1/projects/:id", async (request, response) => {
     const project = await database("projects")
       .select()
       .where("id", request.params.id);
-      console.log("PROJECT", project)
     if (project.length) {
       const palettes = await database("palettes")
         .select()
@@ -74,7 +72,7 @@ app.get("/api/v1/palettes/:id", async (request, response) => {
     const palette = await database("palettes")
       .select()
       .where("id", id);
-    if (palette.length) {
+    if (palette) {
       response.status(200).json(palette);
     } else {
       response.status(404).json({
@@ -146,19 +144,18 @@ app.delete("/api/v1/palettes/:id", async (request, response) => {
   const id = request.params.id;
   try {
     const palette = await database("palettes")
-      .select()
-      .where("id", id)
+      .where("id", id).select()
       if (palette.length) {
         await database("palettes")
-        .select()
-        .where("id", id)
-        .del();
-      response.status(204);
-    } else {
-      response.status(404).json({
-        error: `Could not find a palette with id of ${id}`
-      });
-    }
+          .select()
+          .where("id", id)
+          .del();
+          response.sendStatus(204);
+      } else {
+        response.status(404).json({
+          error: `Could not find a palette with id of ${id}`
+        });
+      }
   } catch (error) {
     response.status(500).json({ error });
   }
