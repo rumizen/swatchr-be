@@ -32,10 +32,11 @@ app.get("/api/v1/projects", async (request, response) => {
 app.get("/api/v1/projects/:id/palettes", async (request, response) => {
   try {
     const id = request.params.id;
-    const palettes = await database("palettes")
-      .where("project_id", id)
-      .select();
-    if (palettes.length) {
+    const validProject = await database("projects").where("id", id);
+    if (validProject.length) {
+      const palettes = await database("palettes")
+        .where("project_id", id)
+        .select();
       response.status(200).json(palettes);
     } else {
       response.status(404).json(`A project with an id of ${id} doesn't exist`);
