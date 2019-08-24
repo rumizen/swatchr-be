@@ -69,9 +69,9 @@ describe("API", () => {
             color2: pal.color2,
             color3: pal.color3,
             color4: pal.color4,
-            color5: pal.color5,
-          }
-        })
+            color5: pal.color5
+          };
+        });
         expectedProject.palettes = cleanedExpectedProjPalettes;
         const res = await request(app).get(`/api/v1/projects/${projectId}`);
         const project = res.body;
@@ -84,9 +84,9 @@ describe("API", () => {
             color2: pal.color2,
             color3: pal.color3,
             color4: pal.color4,
-            color5: pal.color5,
-          }
-        })
+            color5: pal.color5
+          };
+        });
         project.palettes = cleanProjPalettes;
 
         expect(project.id).toEqual(expectedProject.id);
@@ -98,10 +98,14 @@ describe("API", () => {
     describe("sad path", () => {
       it('should return a 404 status and the message: "Could not find a project with id of -1" ', async () => {
         const invalidId = -1;
-        const response = await request(app).get(`/api/v1/projects/${invalidId}`);
+        const response = await request(app).get(
+          `/api/v1/projects/${invalidId}`
+        );
         expect(response.status).toBe(404);
-        expect(response.body.error).toEqual('Could not find a project with id of -1');
-      })
+        expect(response.body.error).toEqual(
+          "Could not find a project with id of -1"
+        );
+      });
     });
   });
 
@@ -159,7 +163,9 @@ describe("API", () => {
           projectId
         );
         const paletteId = palettes[0].id;
-        const response = await request(app).get(`/api/v1/palettes/${paletteId}`);
+        const response = await request(app).get(
+          `/api/v1/palettes/${paletteId}`
+        );
         expect(response.status).toBe(200);
       });
       it("should return a palette matching the id", async () => {
@@ -170,17 +176,20 @@ describe("API", () => {
           projectId
         );
         const paletteId = palettes[0].id;
-        const expectedPalette = await database("palettes").where("id", paletteId);
+        const expectedPalette = await database("palettes").where(
+          "id",
+          paletteId
+        );
         const cleanedExpectedPalette = expectedPalette.map(pal => {
           return { name: pal.name, id: pal.id };
-        })
+        });
         const response = await request(app).get(
           `/api/v1/palettes/${paletteId}`
         );
         const palette = response.body;
         const cleanedPalette = palette.map(pal => {
           return { name: pal.name, id: pal.id };
-        })
+        });
 
         expect(cleanedPalette).toEqual(cleanedExpectedPalette);
       });
@@ -243,13 +252,15 @@ describe("API", () => {
         const projectRes = await request(app).get("/api/v1/projects");
         const projectId = projectRes.body[0].id;
         const newPalette = {
-            name: "Test Palette", 
-            color1: "red",
-            color2: "blue",
-            color3: "orange",
-            color4: "green",
-            color5: "yellow",
+          palette: {
+            name: "Palette 10000",
+            color1: "#B06454",
+            color2: "#B7AE23",
+            color3: "#39B723",
+            color4: "#23B7B7",
+            color5: "#232EB7",
             project_id: projectId
+          }
         };
         const res = await request(app)
           .post(`/api/v1/projects/${projectId}/palettes`)
@@ -261,41 +272,49 @@ describe("API", () => {
         const projectRes = await request(app).get("/api/v1/projects");
         const projectId = projectRes.body[0].id;
         const newPalette = {
-          name: "Palette 10000",
-          color1: "#B06454",
-          color2: "#B7AE23",
-          color3: "#39B723",
-          color4: "#23B7B7",
-          color5: "#232EB7",
-          project_id: projectId
+          palette: {
+            name: "Palette 10000",
+            color1: "#B06454",
+            color2: "#B7AE23",
+            color3: "#39B723",
+            color4: "#23B7B7",
+            color5: "#232EB7",
+            project_id: projectId
+          }
         };
         const res = await request(app)
           .post(`/api/v1/projects/${projectId}/palettes`)
           .send(newPalette);
-        const paletteArray = await database('palettes').where('project_id', projectId).select()
-        const foundPalette = paletteArray.find(pal => pal.name === newPalette.name)
-        expect(foundPalette.name).toEqual(newPalette.name)
+        const paletteArray = await database("palettes")
+          .where("project_id", projectId)
+          .select();
+        const foundPalette = paletteArray.find(
+          pal => pal.name === newPalette.palette.name
+        );
+        expect(foundPalette.name).toEqual(newPalette.palette.name);
       });
     });
     describe("sad path", () => {
       it("should send a 422 response status back if the request body is wrong", async () => {
         const projectRes = await request(app).get("/api/v1/projects");
         const projectId = projectRes.body[0].id;
-        const invalidPalette = { 
-          name: "Palette 10000",
-          color1: "#B06454",
-          color2: "#B7AE23",
-          color3: "#39B723",
-          color4: "#23B7B7",
-          color5: "#232EB7"
-        }
+        const invalidPalette = {
+          palette: {
+            name: "Palette 10000",
+            color1: "#B06454",
+            color2: "#B7AE23",
+            color3: "#39B723",
+            color4: "#23B7B7",
+            color5: "#232EB7"
+          }
+        };
         const res = await request(app)
-        .post(`/api/v1/projects/${projectId}/palettes`)
-        .send(invalidPalette);
+          .post(`/api/v1/projects/${projectId}/palettes`)
+          .send(invalidPalette);
 
-      expect(res.status).toBe(422)
-      })
-    })
+        expect(res.status).toBe(422);
+      });
+    });
   });
 
   describe("PATCH /projects/:id", () => {
@@ -355,47 +374,51 @@ describe("API", () => {
 
   describe("PATCH /palettes/:id", () => {
     describe("happy path", () => {
-      it('should return a 200 status on success', async () => {
+      it("should return a 200 status on success", async () => {
         const projectRes = await request(app).get("/api/v1/projects");
         const projectId = projectRes.body[0].id;
         const newName = { name: "Different Palette Name" };
-        const res = await request(app).get(`/api/v1/projects/${projectId}/palettes`);
-        const paletteId = res.body[0].id
+        const res = await request(app).get(
+          `/api/v1/projects/${projectId}/palettes`
+        );
+        const paletteId = res.body[0].id;
 
         const paletteRes = await request(app)
           .patch(`/api/v1/palettes/${paletteId}`)
           .send(newName);
 
         expect(paletteRes.status).toBe(200);
-      })
+      });
 
-      it('should change the name of a palette and return a new name', async () => {
+      it("should change the name of a palette and return a new name", async () => {
         const projectRes = await request(app).get("/api/v1/projects");
         const projectId = projectRes.body[0].id;
         const newName = { name: "Different Palette Name" };
-        const res = await request(app).get(`/api/v1/projects/${projectId}/palettes`);
-        const paletteId = res.body[0].id
+        const res = await request(app).get(
+          `/api/v1/projects/${projectId}/palettes`
+        );
+        const paletteId = res.body[0].id;
 
         const paletteRes = await request(app)
           .patch(`/api/v1/palettes/${paletteId}`)
           .send(newName);
 
-      expect(paletteRes.body.name).toEqual(newName.name)
-      })
+        expect(paletteRes.body.name).toEqual(newName.name);
+      });
     });
 
     describe("sad path", () => {
-      it('should return a 404 status, if sent an invalid id', async () => {
+      it("should return a 404 status, if sent an invalid id", async () => {
         const newName = { name: "Different Palette Name" };
-        const invalidId = -1
+        const invalidId = -1;
         const paletteRes = await request(app)
           .patch(`/api/v1/palettes/${invalidId}`)
           .send(newName);
 
-          expect(paletteRes.status).toBe(404);
-      })
-    })
-  })
+        expect(paletteRes.status).toBe(404);
+      });
+    });
+  });
 
   describe("DELETE /projects/:id", () => {
     describe("happy paths", () => {
@@ -438,11 +461,10 @@ describe("API", () => {
     });
   });
 
-
   describe("DELETE palettes/:id", () => {
     describe("happy path", () => {
       it("should return a 204 status on success", async () => {
-        const palette = await database('palettes').first()
+        const palette = await database("palettes").first();
         const deleteRes = await request(app).delete(
           `/api/v1/palettes/${palette.id}`
         );
