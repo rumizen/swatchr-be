@@ -102,7 +102,7 @@ app.post("/api/v1/projects", async (request, response) => {
 });
 
 app.post("/api/v1/projects/:id/palettes", async (request, response) => {
-  let newPalette = request.body
+  let newPalette = request.body.palette;
   try {
     for(let requiredParameter of ['name', 'project_id', 'color1', 'color2', 'color3', 'color4', 'color5']) {
       if(!newPalette[requiredParameter]) {
@@ -111,7 +111,7 @@ app.post("/api/v1/projects/:id/palettes", async (request, response) => {
         })
       }
     }
-      const newPaletteId = await database.insert(request.body).returning('*').into('palettes')
+      const newPaletteId = await database.insert(newPalette).returning('*').into('palettes')
       response.status(201).json(newPaletteId); 
   } catch (error) {
     response.status(500).json({ error })
